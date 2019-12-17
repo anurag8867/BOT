@@ -1,0 +1,7 @@
+{
+  "databaseName" : "Db",
+  "collectionName" : {
+    "messages": "messages",
+    "users": "users"
+  }
+}

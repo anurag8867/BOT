@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 
 // You can find your project ID in your Dialogflow agent settings
-const projectId = ''; //https://dialogflow.com/docs/agents#settings
+const projectId = 'anurag-gfchsn'; //https://dialogflow.com/docs/agents#settings
 const sessionId = '123456';
 const languageCode = 'en-US';
 
@@ -23,6 +23,7 @@ const sessionPath = sessionClient.sessionPath(projectId, sessionId);
 const { FACEBOOK_ACCESS_TOKEN } = process.env;
 
 const sendTextMessage = (userId, text) => {
+  console.log(text + " @src/process-message.js----------")
   return fetch(
     `https://graph.facebook.com/v2.6/me/messages?access_token=${FACEBOOK_ACCESS_TOKEN}`,
     {
@@ -41,9 +42,9 @@ const sendTextMessage = (userId, text) => {
       }),
     }
   );
-}
+};
 
-module.exports = (event) => {
+module.exports = (event, msg) => {
   const userId = event.sender.id;
   const message = event.message.text;
 
@@ -56,15 +57,18 @@ module.exports = (event) => {
       },
     },
   };
-
-  sessionClient
-    .detectIntent(request)
-    .then(responses => {
-      const result = responses[0].queryResult;
-      return sendTextMessage(userId, result.fulfillmentText);
-    })
-    .catch(err => {
-      console.error('ERROR:', err);
-    });
-}
+  if (msg) {
+    sendTextMessage(userId, msg);
+  } else {
+    sessionClient
+        .detectIntent(request)
+        .then(responses => {
+          const result = responses[0].queryResult;
+          return sendTextMessage(userId, result.fulfillmentText);
+        })
+        .catch(err => {
+          console.error('ERROR:', err);
+        });
+  }
+};
 
